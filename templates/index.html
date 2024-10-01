@@ -1,0 +1,68 @@
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Kafka live location - Delivery</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script src="https://maps.googleapis.com/maps/api/js?key=<GOOGLE_MAP_API_KEY>" async></script>
+        <style>
+            #map{
+                width: 100%;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="map">
+
+        </div>
+        <script src="" async defer></script>
+        <script>
+            var map;
+            var marker;
+            function initMap(){
+                var initialLocation = {lat: 19.07, lng:72.87}
+                map = new google.maps.Map(document.getElementById('map'),{
+                    zoom : 10,
+                    center:initialLocation,
+                    restriction : {
+                        latLngBounds : {
+                            north: 20.0,
+                            south : 18.8,
+                            east : 73.9, 
+                            west: 72.7
+                        },
+                        strictBound : false
+                    }
+                })
+                marker = new google.maps.Marker({
+                    position : initialLocation,
+                    map: map
+                })
+                updateLocation();
+            }
+            function updateLocation(){
+                fetch('/livelocation/').then(response => response.json()).then(data => {
+                    var newLocation = {
+                        lat : data.latitude,
+                        lng : data.longitude
+                    }
+                    marker.setPosition(newLocation)
+                    map.setCenter(newLocation)
+                })
+                setTimeout(updateLocation, 2000)
+            }
+            window.onload = initMap
+        </script>
+
+    </body>
+</html>
